@@ -17,7 +17,7 @@ func usageDetails() {
 }
 
 func userDetails(userName string) {
-  fmt.Println("User details for ", userName)
+  fmt.Println("User details for " + userName)
 
   client := octokit.NewClient(nil)
 
@@ -33,7 +33,12 @@ func userDetails(userName string) {
     return
   }
 
-  fmt.Printf("%v has shared %v public git repositories and %v gists", userName, user.PublicRepos, user.PublicGists)
+  spaces := ""
+  for i:=0; i<len(userName); i++ { spaces += " " }
+  publicGists := 0
+  fmt.Printf("%v has shared %v public git repositories and %v gists.\n", userName, user.PublicRepos, publicGists)
+  fmt.Printf("%v is followed by %v GitHub users and follows %v users.\n", spaces, user.Followers, user.Following)
+  fmt.Printf("%v has been a happy GitHub user since %v.\n", spaces, user.CreatedAt.Format("2006-01-02"))
 }
 
 func main() {
