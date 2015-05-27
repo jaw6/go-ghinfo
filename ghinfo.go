@@ -4,6 +4,7 @@ import (
   "flag"
   "fmt"
   "strings"
+  "time"
   "github.com/octokit/go-octokit/octokit"
 )
 
@@ -22,6 +23,11 @@ func makeHeader(head string) (header string) {
   return
 }
 
+func makeSpaces(str string) (spaces string) {
+  for i:=0; i<len(str); i++ { spaces += " " }
+  return
+}
+
 func getRepo(input string) (owner, repo string) {
   parts := strings.Split(input, "/")
   l := len(parts)
@@ -30,9 +36,28 @@ func getRepo(input string) (owner, repo string) {
   return
 }
 
+func yyyymmdd(t *time.Time) string {
+  return t.Format("2006-01-02")
+}
+
 func repoDetails(repoInput string) {
-  owner, repo := getRepo(repoInput)
-  fmt.Println(makeHeader(fmt.Sprintf("Details for repository %v/%v", owner, repo)))
+  owner, repoName := getRepo(repoInput)
+  fmt.Println(makeHeader(fmt.Sprintf("Details for repository %v/%v", owner, repoName)))
+
+  client := octokit.NewClient(nil)
+
+  // client.Repositories() is inexplicably different signature than Users()
+  repo, _ := client.Repositories().One(&octokit.RepositoryURL, octokit.M{"owner": owner, "repo": repoName})
+
+  combo := fmt.Sprintf("%v/%v", owner, repoName)
+  spaces := makeSpaces(combo)
+  fmt.Printf("%v by %v\n\n", repo.Name, owner)
+  fmt.Println(repo.Description + "\n")
+  fmt.Println("Homepage: " + repo.Homepage + "\n")
+  fmt.Printf("%v has been forked %v times and starred %v times.\n", combo, repo.ForksCount, repo.StargazersCount)
+  fmt.Printf("%v has %v open issues.\n", spaces, repo.OpenIssues)
+  fmt.Printf("%v was created on %s and last updated %s.\n", spaces, yyyymmdd(repo.CreatedAt), yyyymmdd(repo.UpdatedAt))
+  fmt.Printf("\nClone URL: %v\n", repo.CloneURL)
 }
 
 func usageDetails() {
@@ -56,14 +81,13 @@ func userDetails(userName string) {
     return
   }
 
-  spaces := ""
-  for i:=0; i<len(userName); i++ { spaces += " " }
+  spaces := makeSpaces(userName)
   publicGists := "'?'"
 
   fmt.Printf("     Name: %v\n Location: %v\n    Email: %v\n\n", user.Name, user.Location, user.Email)
   fmt.Printf("%v has shared %v public git repositories and %v gists.\n", userName, user.PublicRepos, publicGists)
   fmt.Printf("%v is followed by %v GitHub users and follows %v users.\n", spaces, user.Followers, user.Following)
-  fmt.Printf("%v has been a happy GitHub user since %v.\n", spaces, user.CreatedAt.Format("2006-01-02"))
+  fmt.Printf("%v has been a happy GitHub user since %v.\n", spaces, yyyymmdd(user.CreatedAt))
 }
 
 func main() {
