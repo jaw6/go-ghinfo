@@ -61,7 +61,11 @@ func repoDetails(repoInput string) {
 }
 
 func usageDetails() {
-  fmt.Println("Hello - usage details go here")
+  fmt.Println("Usage: ghinfo [options] <argv>...")
+  fmt.Println("Options:")
+  fmt.Println(" -u | -user <username>        Display user details")
+  fmt.Println(" -r | -repo <user/repository> Display repo details")
+  fmt.Println(" -h | -help                   Help")
 }
 
 func userDetails(userName string) {
