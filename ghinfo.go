@@ -36,6 +36,12 @@ func userDetails(userName string) {
   spaces := ""
   for i:=0; i<len(userName); i++ { spaces += " " }
   publicGists := 0
+
+  head := fmt.Sprintf("Details for GitHub user %v", userName)
+  hr   := ""
+  for i:=0; i<len(head); i++ { hr += "=" }
+  fmt.Printf(head + "\n" + hr + "\n\n")
+  fmt.Printf("     Name: %v\n Location: %v\n    Email: %v\n\n", user.Name, user.Location, user.Email)
   fmt.Printf("%v has shared %v public git repositories and %v gists.\n", userName, user.PublicRepos, publicGists)
   fmt.Printf("%v is followed by %v GitHub users and follows %v users.\n", spaces, user.Followers, user.Following)
   fmt.Printf("%v has been a happy GitHub user since %v.\n", spaces, user.CreatedAt.Format("2006-01-02"))
